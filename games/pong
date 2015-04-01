@@ -1,0 +1,71 @@
+//Paddle variables
+$paddley = $enemypaddley = 35
+
+//Ball position
+$ballx = 78
+$bally = 43
+
+//Balls dynamic speed
+$balldx = $balldy = 2
+
+//The static variables for the thickness of the ball, walls and the length of the paddle
+#thick = 4
+#paddlelength = 20
+
+
+//The draw method for all of the drawing to take place
+draw{
+  //walls
+  drawbox(0,#thick,#w,#h-#thick-#thick,7)
+
+  write('PONG',70,10,0)
+  write($leftScore, 20, 10)
+  write($rightScore, 135, 10)
+
+  //ball
+	drawbox($ballx, $bally, #thick, #thick, 1)
+
+	//paddles
+	drawbox(#thick,$paddley,#thick,#paddlelength,4)
+	drawbox(#w-#thick-#thick,$enemypaddley,#thick,#paddlelength)
+}
+
+update{
+	//key control
+	if(keyup && $paddley > #thick) $paddley-=2
+	if(keydown && $paddley < #h - #thick - #paddlelength) $paddley += 2
+
+	//ai
+	if($bally < $enemypaddley) $enemypaddley-=2
+	else if($enemypaddley < #h - #thick - #paddlelength)$enemypaddley+=2
+
+	//$ball movement
+	$ballx += $balldx
+	$bally += $balldy
+
+
+	//ball collisions on the wall
+	if($bally < #thick || $bally > #h - #thick - #thick) $balldy *= -1
+
+  //ball collisions on the enemy paddle
+	if($ballx > #w - #thick - #thick - #thick){
+		if($bally > $enemypaddley - #thick && $bally < $enemypaddley + #paddlelength){
+			$balldx *= -1
+		} else {
+		  $leftScore++
+			$ballx = 78
+      $bally = 43
+		}
+	}
+
+  //ball collisions on the players paddle
+	if($ballx < #thick + #thick){
+		if($bally > $paddley - #thick && $bally < $paddley + #paddlelength){
+			$balldx *= -1
+		} else {
+		  $rightScore++
+			$ballx = 78
+			$bally = 43
+		}
+	}
+}

@@ -1,0 +1,74 @@
+$reset = function{
+  $balldx = 2
+  $balldy = -2
+  $ballx = 20
+  $bally = 43
+  $score = 0
+  $paddley = 35
+  $blocks = array(48)
+}
+;
+$reset()
+
+#thick = 4
+#paddlelength = 20
+#size = 8
+
+draw{
+  //walls
+  drawbox(0,#thick,#w-#thick,#h-#thick-#thick,7)
+
+  //paddles
+  drawbox(#thick,$paddley,#thick,#paddlelength,4)
+
+  for($i = 0: $i < 48; $i++){
+    if(!$blocks[$i]){
+      drawbox(70 + (~~($i/6) * #size),($i%6) + 20 + ($i%6 * #size-1), #size, #size, $i%6)
+     }
+  }
+
+  //$ball
+  drawbox($ballx, $bally, #thick, #thick, 1)
+
+  write($score, 10, 0, 6)
+}
+
+update{
+  //key control
+	if(keyup && $paddley > #thick) $paddley-=2
+	if(keydown && $paddley < #h - #thick - #paddlelength) $paddley+=2
+
+	//$ball movement
+	$ballx += $balldx
+	$bally += $balldy
+
+	//$ball collisions
+	//wall
+	if($bally < #thick || $bally > #h - #thick - #thick) $balldy *= -1
+
+	if($ballx > #w - #thick - #thick) $balldx = -2
+
+	if($ballx < #thick + #thick){
+		if($bally > $paddley - #thick && $bally < $paddley + #paddlelength){
+			$balldx = 2
+		} else {
+		  $reset()
+		}
+	}
+
+	if($ballx > 68 && $ballx < 132 && $bally > 18 && $bally < 66){
+	  $tx = $px
+	  $ty = $py
+	  $px = ~~(($ballx-68)/8);
+	  $py = ~~(($bally-18)/8);
+	  $block = $px * 6 + $py
+	  if(!$blocks[$block]){
+	    $blocks[$block] = 1;
+	    if($tx!=$px)$balldx *= -1
+	    if($ty!=$py)$balldy *= -1
+	    $score++
+	  }
+	}
+
+	if($score%48==0)$blocks = array(48)
+}
