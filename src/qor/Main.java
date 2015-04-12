@@ -4,12 +4,20 @@ import java.io.IOException;
 
 public class Main {
 	
+	/**
+	 * Sample program for the compressor
+	 */
 	public static void main(String[] args) throws IOException {
 		String pong = Statics.readFile("games/breakout");
 		
 		Compressor c = new Compressor();
 		
-		pong = c.compress(pong);
+		try {
+			pong = c.compress(pong);
+		} catch (IllegalCharacterException e) {
+			System.out.println("Illegal Character : " + e.getIllegalCharacter());
+			e.printStackTrace();
+		}
 		
 		//pong = pong.replaceAll("#thick", "4");
 		

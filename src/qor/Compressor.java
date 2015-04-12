@@ -10,9 +10,22 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 
+/**
+ * Compressor for the QRLang project. This takes QRLang code and compresses it ready for use
+ * in a decompressor or to be encoded into a QR code.
+ * 
+ * @author Samuel Haycock
+ *
+ */
 public class Compressor {
 	
-	public String compress(String code){
+	/**
+	 * Compresses the given code to QRLang compressed code.
+	 * @param code the code to be compressed.
+	 * @return the compressed code
+	 * @throws IllegalCharacterException if there is an illegal character in the code
+	 */
+	public String compress(String code) throws IllegalCharacterException{
 		code = removeComments(code);
 		
 		ArrayList<String> quotes = getQuotes(code);
@@ -25,9 +38,16 @@ public class Compressor {
 		
 		code = replaceQuotes(code, quotes);
 		
+		for(int i = 0; i < code.length(); i++){
+			if(!Statics.characters.contains(code.substring(i,i+1))){
+				throw new IllegalCharacterException(code.substring(i,i+1));
+			}
+		}
+		
 		return code;
 	}
 	
+	//Replaces all of the removed qoutes back into the code
 	private String replaceQuotes(String code, ArrayList<String> quotes) {
 		for(int i = 0; i < quotes.size(); i++){
 			String quote = quotes.get(i);
@@ -38,6 +58,8 @@ public class Compressor {
 		return code;
 	}
 
+	//Does precalculations to constants in the code to minimise space
+	//eg. if 244+55 was found in the code it would be replaced with 299
 	private String preProcess(String code) {
 		ScriptEngineManager mgr = new ScriptEngineManager();
 	    ScriptEngine engine = mgr.getEngineByName("JavaScript");
@@ -57,10 +79,12 @@ public class Compressor {
 		return code;
 	}
 	
+	//Removes all comments in the code with regex
 	private String removeComments(String code){
 		return code.replaceAll(Statics.commentRegex, "");
 	}
 	
+	//Retreive an arraylist of quotes in the project
 	private ArrayList<String> getQuotes(String code){
 		ArrayList<String> quotes = new ArrayList<String>();
 		
@@ -70,6 +94,7 @@ public class Compressor {
 		return quotes;
 	}
 	
+	//Removes all quotes within the code
 	private String removeQuotes(String code){
 	    Matcher matcher = Pattern.compile("'(.*?)'").matcher(code);
 	    int i = 1;
@@ -81,6 +106,7 @@ public class Compressor {
 		return code;
 	}
 	
+	//Replaces all variables in the code with a minified version ($)
 	private String replaceVariables(String code){
 		ArrayList<String> matches = new ArrayList<String>();
 		Matcher matcher = Pattern.compile("\\$(\\w*)").matcher(code);
@@ -100,6 +126,7 @@ public class Compressor {
 		return code;
 	}
 
+	//Replaces all special characters and sequences within the code
 	private String replaceSpecialCharacters(String code){
 		for(String[] pair: Statics.matches){
 			code = code.replaceAll(Pattern.quote(pair[0]),pair[1]);
@@ -108,6 +135,7 @@ public class Compressor {
 		return code;
 	}
 	
+	//Replaces all constants within the document to their set values
 	private String replaceConstants(String code){
 		code = code.replaceAll("#w", "160");
 		code = code.replaceAll("#h", "90");
