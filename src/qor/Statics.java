@@ -6,11 +6,11 @@ import java.nio.file.Paths;
 
 public class Statics {
 
-	public static String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 $:%*+-=./";
-	public static String commentRegex = "(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)";
-	public static String cList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+	public static final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 $:%*+-=./";
+	public static final String commentRegex = "(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)";
+	public static final String cList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
-	public static String[][] matches = {
+	public static final String[][] matches = {
 		{"\n",""},
 		{"\r",""},
 		{"\t",""},
